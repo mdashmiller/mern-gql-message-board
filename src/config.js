@@ -12,11 +12,7 @@ export const {
 
   SESS_NAME,
   SESS_SECRET,
-  SESS_LIFETIME,
-
-  REDIS_HOST,
-  REDIS_PORT,
-  REDIS_PASSWORD
+  SESS_LIFETIME = 1000 * 60 * 60 * 2,
 } = process.env
 
 export const IN_PROD = NODE_ENV === 'production'

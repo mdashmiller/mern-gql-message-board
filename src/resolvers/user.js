@@ -9,7 +9,7 @@ export default {
   Query: {
     me: (root, args, { req }, info) => {
       // TODO: projection
-
+      
       Auth.checkSignedIn(req)
 
       return User.findById(req.session.userId)
@@ -57,9 +57,9 @@ export default {
       await Joi.validate(args, signIn, { abortEarly: false })
 
       const user = await Auth.attemptSignIn(args.email, args.password)
-
+      
       req.session.userId = user.id
-
+      
       return user
     },
     signOut: (root, args, { req, res }, info) => {
