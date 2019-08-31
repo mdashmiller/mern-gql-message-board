@@ -8,7 +8,15 @@ export const {
   DB_PASSWORD,
   DB_HOST,
   DB_PORT,
-  DB_NAME
+  DB_NAME,
+
+  SESS_NAME,
+  SESS_SECRET,
+  SESS_LIFETIME,
+
+  REDIS_HOST,
+  REDIS_PORT,
+  REDIS_PASSWORD
 } = process.env
 
 export const IN_PROD = NODE_ENV === 'production'

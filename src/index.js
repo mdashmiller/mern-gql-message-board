@@ -1,10 +1,16 @@
 import { ApolloServer } from 'apollo-server-express'
 import express from 'express'
 import mongoose from 'mongoose'
+import session from 'express-session'
+// import redis from 'redis'
+import connectRedis from 'connect-redis'
 import typeDefs from './typeDefs'
 import resolvers from './resolvers'
 import {
-  APP_PORT, IN_PROD, DB_USERNAME, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME
+  APP_PORT, IN_PROD,
+  DB_USERNAME, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME,
+  SESS_NAME, SESS_SECRET, SESS_LIFETIME,
+  REDIS_HOST, REDIS_PORT, REDIS_PASSWORD
 } from './config'
 
 (async () => {
@@ -18,14 +24,46 @@ import {
 
     app.disable('x-powered-by')
 
-    const server = new ApolloServer({
-      // These will be defined for both new or existing servers
-      typeDefs,
-      resolvers,
-      playground: !IN_PROD
+    const RedisStore = connectRedis(session)
+    // const client = redis.createClient({
+    //   url: `redis://${REDIS_HOST}:${REDIS_PORT}`,
+    //   password: REDIS_PASSWORD
+    // })
+
+    // const store = new RedisStore({ client })
+
+    const store = new RedisStore({
+      host: REDIS_HOST,
+      port: REDIS_PORT,
+      pass: REDIS_PASSWORD
     })
 
-    server.applyMiddleware({ app }) // app is from an existing express app
+    app.use(session({
+      store,
+      name: SESS_NAME,
+      secret: SESS_SECRET,
+      resave: false,
+      saveUninitialized: false,
+      cookie: {
+        maxAge: parseInt(SESS_LIFETIME),
+        sameSite: true,
+        secure: IN_PROD
+      }
+    }))
+
+    const server = new ApolloServer({
+      typeDefs,
+      resolvers,
+      cors: false,
+      playground: IN_PROD ? false : {
+        settings: {
+          'request.credentials': 'include'
+        }
+      },
+      context: ({ req, res }) => ({ req, res })
+    })
+
+    server.applyMiddleware({ app })
 
     app.listen({ port: APP_PORT }, () =>
       console.log(`server ready at http://localhost:${APP_PORT}${server.graphqlPath}`)
