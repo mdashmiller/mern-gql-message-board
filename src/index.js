@@ -10,6 +10,7 @@ import {
   DB_USERNAME, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME,
   SESS_NAME, SESS_SECRET, SESS_LIFETIME
 } from './config'
+import schemaDirectives from './directives'
 
 (async () => {
   try {
@@ -41,7 +42,7 @@ import {
     const server = new ApolloServer({
       typeDefs,
       resolvers,
-      cors: false,
+      schemaDirectives,
       playground: IN_PROD ? false : {
         settings: {
           'request.credentials': 'include'
@@ -50,7 +51,7 @@ import {
       context: ({ req, res }) => ({ req, res })
     })
 
-    server.applyMiddleware({ app })
+    server.applyMiddleware({ app, cors: false })
 
     app.listen({ port: APP_PORT }, () =>
       console.log(`server ready at http://localhost:${APP_PORT}${server.graphqlPath}`)
