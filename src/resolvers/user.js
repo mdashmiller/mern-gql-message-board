@@ -1,36 +1,27 @@
-import mongoose from 'mongoose'
 import Joi from 'joi'
-import { UserInputError } from 'apollo-server-express'
 import { User } from '../models'
-import { signUp, signIn } from '../shemas'
+import { signUp, signIn, objectId } from '../shemas'
 import { attemptSignIn, signOut } from '../auth'
 
 export default {
   Query: {
     me: (root, args, { req }, info) => {
       // TODO: projection
-
       return User.findById(req.session.userId)
     },
     users: (root, args, { req }, info) => {
       // TODO: projection, pagination
-
       return User.find({})
     },
-    user: (root, { id }, { req }, info) => {
+    user: async (root, args, { req }, info) => {
       // TODO: projection
-
-      if (!mongoose.Types.ObjectId.isValid(id)) {
-        throw new UserInputError('USer ID is not a valid Object ID')
-      }
-
-      return User.findById(id)
+      await Joi.validate(args, objectId)
+      return User.findById(args.id)
     }
   },
   Mutation: {
     signUp: async (root, args, { req }, info) => {
       // TODO: not auth
-
       await Joi.validate(args, signUp, { abortEarly: false })
 
       const user = await User.create(args)
@@ -50,6 +41,12 @@ export default {
     },
     signOut: (root, args, { req, res }, info) => {
       return signOut(req, res)
+    }
+  },
+  User: {
+    posts: async (user, args, context, info) => {
+      // TODO: pagination, projection
+      return (await user.populate('posts').execPopulate()).posts
     }
   }
 }
