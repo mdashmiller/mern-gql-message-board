@@ -18,10 +18,10 @@ export default {
       return User.find({})
     },
     user: (root, { id }, { req }, info) => {
-      // TODO: projection, sanitization
+      // TODO: projection
 
       if (!mongoose.Types.ObjectId.isValid(id)) {
-        throw new UserInputError(`${id} is not a valid user id`)
+        throw new UserInputError('USer ID is not a valid Object ID')
       }
 
       return User.findById(id)

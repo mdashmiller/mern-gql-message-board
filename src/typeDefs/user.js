@@ -17,6 +17,8 @@ export default gql`
     id: ID!
     email: String!
     username: String!
+    posts: [Post!]!
     createdAt: String!
+    updatedAt: String!
   }
 `
