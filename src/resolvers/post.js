@@ -18,7 +18,7 @@ export default {
       const author = await User.findById(userId)
       const post = await Post.create({ title, body, author })
 
-      await User.where({ _id: userId }).update({ $push: { posts: post } })
+      await User.where({ _id: userId }).updateOne({ $push: { posts: post } })
 
       return post
     }
