@@ -41,6 +41,29 @@ export default {
     },
     signOut: (root, args, { req, res }, info) => {
       return signOut(req, res)
+    },
+    update: async (root, args, { req }, info) => {
+      const { email, username, password } = args
+
+      const user = await User.findById(req.session.userId)
+
+      if (!user) {
+        console.log('No user found with given ID')
+      }
+
+      if (email) {
+        user.email = email
+      }
+
+      if (username) {
+        user.username = username
+      }
+
+      if (password) {
+        user.password = password
+      }
+
+      return user.save({ validateBeforeSave: false })
     }
   },
   User: {
