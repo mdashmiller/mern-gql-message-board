@@ -16,7 +16,10 @@ import schemaDirectives from './directives'
   try {
     await mongoose.connect(
       `mongodb://${DB_USERNAME}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}`,
-      { useNewUrlParser: true }
+      {
+        useNewUrlParser: true,
+        useFindAndModify: false
+      }
     )
 
     const app = express()
