@@ -43,3 +43,26 @@ export const signOut = (req, res) => new Promise(
     })
   }
 )
+
+export const updateProfile = async (req, args) => {
+  const { email, username, password } = args
+  const user = await User.findById(req.session.userId)
+
+  if (!user) {
+    throw new AuthenticationError('No user found with given ID')
+  }
+
+  if (email) {
+    user.email = email
+  }
+
+  if (username) {
+    user.username = username
+  }
+
+  if (password) {
+    user.password = password
+  }
+
+  return user.save({ validateBeforeSave: false })
+}
