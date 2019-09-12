@@ -1,6 +1,6 @@
 import Joi from 'joi'
 import { User } from '../models'
-import { signUp, signIn, objectId } from '../shemas'
+import { signUp, signIn, update, objectId } from '../shemas'
 import { attemptSignIn, signOut, updateProfile } from '../auth'
 
 export default {
@@ -42,7 +42,9 @@ export default {
     signOut: (root, args, { req, res }, info) => {
       return signOut(req, res)
     },
-    update: (root, args, { req }, info) => {
+    update: async (root, args, { req }, info) => {
+      await Joi.validate(args, update, { abortEarly: false })
+
       return updateProfile(req, args)
     }
   },

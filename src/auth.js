@@ -1,4 +1,4 @@
-import { AuthenticationError } from 'apollo-server-express'
+import { AuthenticationError, ApolloError } from 'apollo-server-express'
 import { User } from './models'
 import { SESS_NAME } from './config'
 
@@ -44,25 +44,19 @@ export const signOut = (req, res) => new Promise(
   }
 )
 
-export const updateProfile = async (req, args) => {
-  const { email, username, password } = args
-  const user = await User.findById(req.session.userId)
+export const updateProfile = async ({ session }, args) => {
+  const updatedUser = await User.findOneAndUpdate(
+    { _id: session.userId },
+    { ...args },
+    {
+      new: true,
+      runValidators: true
+    }
+  )
 
-  if (!user) {
-    throw new AuthenticationError('No user found with given ID')
+  if (!updatedUser) {
+    throw new ApolloError('Server error. Please try again.')
   }
 
-  if (email) {
-    user.email = email
-  }
-
-  if (username) {
-    user.username = username
-  }
-
-  if (password) {
-    user.password = password
-  }
-
-  return user.save({ validateBeforeSave: false })
+  return updatedUser
 }
