@@ -1,7 +1,7 @@
 import Joi from 'joi'
 import { User } from '../models'
 import { signUp, signIn, objectId } from '../shemas'
-import { attemptSignIn, signOut } from '../auth'
+import { attemptSignIn, signOut, updateProfile } from '../auth'
 
 export default {
   Query: {
@@ -41,6 +41,9 @@ export default {
     },
     signOut: (root, args, { req, res }, info) => {
       return signOut(req, res)
+    },
+    update: (root, args, { req }, info) => {
+      return updateProfile(req, args)
     }
   },
   User: {

@@ -7,7 +7,7 @@ const userSchema = new mongoose.Schema({
     trim: true,
     validate: {
       validator: email => User.doesntExist({ email }),
-      message: ({ value }) => 'Email has already been taken'
+      message: () => 'Email has already been taken'
     }
   },
   username: {
@@ -15,7 +15,7 @@ const userSchema = new mongoose.Schema({
     trim: true,
     validate: {
       validator: username => User.doesntExist({ username }),
-      message: ({ value }) => 'Username has already been taken'
+      message: () => 'Username has already been taken'
     }
   },
   password: String,
