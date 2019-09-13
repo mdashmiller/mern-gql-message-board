@@ -45,18 +45,36 @@ export const signOut = (req, res) => new Promise(
 )
 
 export const updateProfile = async ({ session }, args) => {
-  const updatedUser = await User.findOneAndUpdate(
-    { _id: session.userId },
-    { ...args },
-    {
-      new: true,
-      runValidators: true
-    }
-  )
+  const { email, username, password } = args
+  const user = await User.findById(session.userId)
 
-  if (!updatedUser) {
+  if (!user) {
     throw new ApolloError('Server error. Please try again.')
   }
 
-  return updatedUser
+  if (email) {
+    const emailExists = await User.findOne({ email })
+
+    if (emailExists && emailExists.id !== session.userId) {
+      throw new AuthenticationError('Email already taken.')
+    }
+
+    user.email = email
+  }
+
+  if (username) {
+    const usernameExists = await User.findOne({ username })
+
+    if (usernameExists && usernameExists.id !== session.userId) {
+      throw new AuthenticationError('Username already taken.')
+    }
+
+    user.username = username
+  }
+
+  if (password) {
+    user.password = password
+  }
+
+  return user.save()
 }

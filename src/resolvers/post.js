@@ -27,6 +27,7 @@ export default {
       const author = await User.findById(userId)
       const post = await Post.create({ title, body, author })
 
+      // add id of created post to posts array on author's user document
       await User.where({ _id: userId }).updateOne({ $push: { posts: post } })
 
       return post
@@ -42,6 +43,9 @@ export default {
       if (userId !== authorId) {
         throw new AuthenticationError('User is not authorized to delete this post.')
       }
+
+      // remove id of deleted post from posts array on author's user document
+      await User.where({ _id: userId }).updateOne({ $pull: { posts: postId } })
 
       return new Promise(
         (resolve, reject) => {

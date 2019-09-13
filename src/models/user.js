@@ -4,19 +4,21 @@ import { hash, compare } from 'bcryptjs'
 const userSchema = new mongoose.Schema({
   email: {
     type: String,
-    trim: true,
-    validate: {
-      validator: email => User.doesntExist({ email }),
-      message: () => 'Email has already been taken'
-    }
+    trim: true
+    // validate: {
+    //   // only call doesntExist on email if user tries to modify it
+    //   validator: email => email ? User.doesntExist({ email }) : true,
+    //   message: () => 'Email has already been taken'
+    // }
   },
   username: {
     type: String,
-    trim: true,
-    validate: {
-      validator: username => User.doesntExist({ username }),
-      message: () => 'Username has already been taken'
-    }
+    trim: true
+    // validate: {
+    //   // only call doesntExist on username if user tries to modify it
+    //   validator: username => username ? User.doesntExist({ username }) : true,
+    //   message: () => 'Username has already been taken'
+    // }
   },
   password: String,
   posts: [{
@@ -33,9 +35,9 @@ userSchema.pre('save', async function () {
   }
 })
 
-userSchema.statics.doesntExist = async function (options) {
-  return await this.where(options).countDocuments() === 0
-}
+// userSchema.statics.doesntExist = async function (options) {
+//   return await this.where(options).countDocuments() === 0
+// }
 
 userSchema.methods.matchesPassword = function (password) {
   return compare(password, this.password)
