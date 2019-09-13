@@ -1,7 +1,7 @@
 import Joi from 'joi'
 import { User } from '../models'
 import { signUp, signIn, update, objectId } from '../shemas'
-import { attemptSignIn, signOut, updateProfile } from '../auth'
+import { isUnique, attemptSignIn, signOut, updateProfile } from '../auth'
 
 export default {
   Query: {
@@ -23,6 +23,8 @@ export default {
     signUp: async (root, args, { req }, info) => {
       // TODO: not auth
       await Joi.validate(args, signUp, { abortEarly: false })
+
+      await isUnique(args)
 
       const user = await User.create(args)
 

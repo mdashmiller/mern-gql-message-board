@@ -44,6 +44,23 @@ export const signOut = (req, res) => new Promise(
   }
 )
 
+export const isUnique = async (args, session = {}) => {
+  const { email, username } = args
+
+  const emailExists = await User.findOne({ email })
+  const usernameExists = await User.findOne({ username })
+
+  // in the following conditionals, don't throw error
+  // if user enters their current email or username
+  if (emailExists && emailExists.id !== session.userId) {
+    throw new AuthenticationError('Email already taken.')
+  }
+
+  if (usernameExists && usernameExists.id !== session.userId) {
+    throw new AuthenticationError('Username already taken.')
+  }
+}
+
 export const updateProfile = async ({ session }, args) => {
   const { email, username, password } = args
   const user = await User.findById(session.userId)
@@ -52,23 +69,13 @@ export const updateProfile = async ({ session }, args) => {
     throw new ApolloError('Server error. Please try again.')
   }
 
+  await isUnique(args, session)
+
   if (email) {
-    const emailExists = await User.findOne({ email })
-
-    if (emailExists && emailExists.id !== session.userId) {
-      throw new AuthenticationError('Email already taken.')
-    }
-
     user.email = email
   }
 
   if (username) {
-    const usernameExists = await User.findOne({ username })
-
-    if (usernameExists && usernameExists.id !== session.userId) {
-      throw new AuthenticationError('Username already taken.')
-    }
-
     user.username = username
   }
 
