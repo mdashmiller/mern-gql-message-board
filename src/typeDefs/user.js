@@ -12,6 +12,7 @@ export default gql`
     signIn(email: String!, password: String!): User @guest
     signOut: Boolean @auth
     update(email: String, username: String, password: String): User @auth
+    remove(email: String!, password: String!): User @auth
   }
 
   type User {

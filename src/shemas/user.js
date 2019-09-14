@@ -1,6 +1,6 @@
 import Joi from 'joi'
 
-// keys for signUp and signIn validation
+// keys for signUp, signIn and remove validation
 const email = Joi.string().email().required().label('Email')
 
 const username = Joi.string().alphanum().min(3).max(30).required().label('Username')
@@ -22,6 +22,10 @@ export const signUp = Joi.object().keys({
 })
 
 export const signIn = Joi.object().keys({
+  email, password
+})
+
+export const remove = Joi.object().keys({
   email, password
 })
 

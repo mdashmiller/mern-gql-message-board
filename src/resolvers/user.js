@@ -1,7 +1,7 @@
 import Joi from 'joi'
 import { User } from '../models'
-import { signUp, signIn, update, objectId } from '../shemas'
-import { isUnique, attemptSignIn, signOut, updateProfile } from '../auth'
+import { signUp, signIn, update, remove, objectId } from '../shemas'
+import { isUnique, attemptSignIn, signOut, updateProfile, removeProfile } from '../auth'
 
 export default {
   Query: {
@@ -48,6 +48,15 @@ export default {
       await Joi.validate(args, update, { abortEarly: false })
 
       return updateProfile(req, args)
+    },
+    remove: async (root, args, { req, res }, info) => {
+      await Joi.validate(args, remove, { abortEarly: false })
+
+      const userRemoved = await removeProfile(req, args)
+
+      await signOut(req, res)
+
+      return userRemoved
     }
   },
   User: {

@@ -1,5 +1,5 @@
 import { AuthenticationError, ApolloError } from 'apollo-server-express'
-import { User } from './models'
+import { User, Post } from './models'
 import { SESS_NAME } from './config'
 
 export const attemptSignIn = async (email, password) => {
@@ -84,4 +84,21 @@ export const updateProfile = async ({ session }, args) => {
   }
 
   return user.save()
+}
+
+export const removeProfile = async ({ session }, { email, password }) => {
+  const user = await attemptSignIn(email, password)
+
+  if (session.userId !== user.id) {
+    throw new AuthenticationError('The logged in user is not authorized to delete this account.')
+  }
+
+  const postsRemoved = await Post.deleteMany({ author: user.id })
+  const userRemoved = await user.remove()
+
+  if (!postsRemoved || !userRemoved) {
+    throw new ApolloError('Sever error. Please try again.')
+  }
+
+  return userRemoved
 }
