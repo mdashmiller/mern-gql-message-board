@@ -56,8 +56,6 @@ export default {
           })
         }
       )
-
-      // TODO: remove postId from posts array on user document
     }
   },
   Post: {

@@ -21,7 +21,6 @@ export default {
   },
   Mutation: {
     signUp: async (root, args, { req }, info) => {
-      // TODO: not auth
       await Joi.validate(args, signUp, { abortEarly: false })
 
       await isUnique(args)
