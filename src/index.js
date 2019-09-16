@@ -33,7 +33,8 @@ import schemaDirectives from './directives'
       store,
       name: SESS_NAME,
       secret: SESS_SECRET,
-      resave: false,
+      resave: true,
+      rolling: true,
       saveUninitialized: false,
       cookie: {
         maxAge: parseInt(SESS_LIFETIME),
@@ -48,7 +49,8 @@ import schemaDirectives from './directives'
       schemaDirectives,
       playground: IN_PROD ? false : {
         settings: {
-          'request.credentials': 'include'
+          'request.credentials': 'include',
+          'schema.polling.enable': false
         }
       },
       context: ({ req, res }) => ({ req, res })
