@@ -1,4 +1,5 @@
 import Joi from 'joi'
+import { postsProjection, populateAuthor } from '../projections'
 import { createPost } from '../shemas'
 import { User, Post } from '../models'
 import { UserInputError, AuthenticationError, ApolloError } from 'apollo-server-express'
@@ -6,8 +7,8 @@ import { UserInputError, AuthenticationError, ApolloError } from 'apollo-server-
 export default {
   Query: {
     posts: (root, args, { req }, info) => {
-      // TODO: projection, pagination
-      return Post.find({})
+      // TODO: pagination
+      return Post.find({}, postsProjection)
     },
     post: (root, { id }, { req }, info) => {
       return Post.findById(id)
@@ -60,8 +61,7 @@ export default {
   },
   Post: {
     author: async (post, args, context, info) => {
-      // TODO: pagination, projection
-      return (await post.populate('author').execPopulate()).author
+      return (await post.populate(populateAuthor).execPopulate()).author
     }
   }
 }
