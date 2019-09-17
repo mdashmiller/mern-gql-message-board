@@ -1,20 +1,19 @@
 import Joi from 'joi'
 import { User } from '../models'
+import { usersProjection, populatePosts } from '../projections'
 import { signUp, signIn, update, remove, objectId } from '../shemas'
 import { isUnique, attemptSignIn, signOut, updateProfile, removeProfile } from '../auth'
 
 export default {
   Query: {
     me: (root, args, { req }, info) => {
-      // TODO: projection
       return User.findById(req.session.userId)
     },
     users: (root, args, { req }, info) => {
-      // TODO: projection, pagination
-      return User.find({})
+      // TODO: pagination
+      return User.find({}, usersProjection)
     },
     user: async (root, args, { req }, info) => {
-      // TODO: projection
       await Joi.validate(args, objectId)
       return User.findById(args.id)
     }
@@ -60,8 +59,9 @@ export default {
   },
   User: {
     posts: async (user, args, context, info) => {
-      // TODO: pagination, projection
-      return (await user.populate('posts').execPopulate()).posts
+      // TODO: pagination
+      return (
+        await user.populate(populatePosts).execPopulate()).posts
     }
   }
 }
