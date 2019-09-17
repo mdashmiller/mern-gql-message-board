@@ -1,7 +1,8 @@
-import Joi from 'joi'
 import { User } from '../models'
-import { usersProjection, populatePosts } from '../projections'
+import Joi from 'joi'
 import { signUp, signIn, update, remove, objectId } from '../shemas'
+import { usersProjection, populatePosts } from '../projections'
+import { findPaginatedData } from '../pagination'
 import { isUnique, attemptSignIn, signOut, updateProfile, removeProfile } from '../auth'
 
 export default {
@@ -10,8 +11,7 @@ export default {
       return User.findById(req.session.userId)
     },
     users: (root, args, { req }, info) => {
-      // TODO: pagination
-      return User.find({}, usersProjection)
+      return findPaginatedData(User, args, usersProjection)
     },
     user: async (root, args, { req }, info) => {
       await Joi.validate(args, objectId)

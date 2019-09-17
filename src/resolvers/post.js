@@ -1,14 +1,14 @@
-import Joi from 'joi'
-import { postsProjection, populateAuthor } from '../projections'
-import { createPost } from '../shemas'
 import { User, Post } from '../models'
+import Joi from 'joi'
+import { createPost } from '../shemas'
+import { postsProjection, populateAuthor } from '../projections'
+import { findPaginatedData } from '../pagination'
 import { UserInputError, AuthenticationError, ApolloError } from 'apollo-server-express'
 
 export default {
   Query: {
     posts: (root, args, { req }, info) => {
-      // TODO: pagination
-      return Post.find({}, postsProjection)
+      return findPaginatedData(Post, args, postsProjection)
     },
     post: (root, { id }, { req }, info) => {
       return Post.findById(id)

@@ -4,7 +4,7 @@ export default gql`
   extend type Query {
     me: User @auth
     user(id: ID!): User @auth
-    users: [User!]! @auth
+    users(limit: Int, page: Int): [User!]! @auth
   }
 
   extend type Mutation {
