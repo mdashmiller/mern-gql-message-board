@@ -59,9 +59,7 @@ export default {
   },
   User: {
     posts: async (user, args, context, info) => {
-      // TODO: pagination
-      return (
-        await user.populate(populatePosts).execPopulate()).posts
+      return (await user.populate(populatePosts(args)).execPopulate()).posts
     }
   }
 }

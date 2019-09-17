@@ -4,9 +4,18 @@ export const usersProjection = {
   posts: 1
 }
 
-export const populatePosts = {
-  path: 'posts',
-  select: 'title createdAt -_id'
+export const populatePosts = args => {
+  const limit = args.limit || 10
+  const page = (args.page || 1) - 1
+
+  return {
+    path: 'posts',
+    select: 'title createdAt -_id',
+    options: {
+      limit,
+      skip: limit * page
+    }
+  }
 }
 
 export const postsProjection = {

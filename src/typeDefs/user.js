@@ -19,7 +19,7 @@ export default gql`
     id: ID!
     email: String!
     username: String!
-    posts: [Post!]!
+    posts(limit: Int, page: Int): [Post!]!
     createdAt: String!
     updatedAt: String!
   }
