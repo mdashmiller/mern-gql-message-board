@@ -26,6 +26,8 @@ export default {
 
       const user = await User.create(args)
 
+      // await confirmEmail(user)
+
       req.session.userId = user.id
 
       return user

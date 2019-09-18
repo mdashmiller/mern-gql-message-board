@@ -61,6 +61,27 @@ export const isUnique = async (args, session = {}) => {
   }
 }
 
+// export const confirmEmail = user => {
+//   jwt.sign(
+//     {
+//       user: _.pick(user, 'id')
+//     },
+//     EMAIL_SECRET,
+//     {
+//       expiresIn: '1d'
+//     },
+//     (err, emailToken) => {
+//       const url = `http://localhost:3000/confirmation/${emailToken}`
+
+//       transporter.sendMail({
+//         to: args.email,
+//         subject: 'Confirm Email',
+//         html: `Please click this email to confirm your email: <a href="${url}">${url}</a>`
+//       })
+//     },
+//   )
+// }
+
 export const updateProfile = async ({ session }, args) => {
   const { password, email, username, newPassword } = args
   const user = await User.findById(session.userId)
@@ -89,6 +110,17 @@ export const updateProfile = async ({ session }, args) => {
 
   return user.save()
 }
+
+// export const getResetPasswordToken = user => {
+//   jwt.sign({ options }, (err, passwordToken) => {
+//     if (err) {
+//       console.log(err)
+//     }
+//     transporter.sendMail() => {
+//       if (err) console.log(err)
+//     }
+//   })
+// }
 
 export const removeProfile = async ({ session }, { email, password }) => {
   const user = await attemptSignIn(email, password)
