@@ -11,10 +11,10 @@ const userSchema = new mongoose.Schema({
     trim: true
   },
   password: String,
-  // confirmed: {
-  //   type: Boolean,
-  //   default: false
-  // },
+  confirmed: {
+    type: Boolean,
+    default: false
+  },
   posts: [{
     type: Schema.Types.ObjectId,
     ref: 'Post'

@@ -122,6 +122,17 @@ export const updateProfile = async ({ session }, args) => {
 //   })
 // }
 
+export const getResetPasswordToken = user => {
+  // const token = user.password
+
+  // if (!token) {
+  //   throw new ApolloError('Server error. Please try again.')
+  // }
+
+  // return token
+  return user.username
+}
+
 export const removeProfile = async ({ session }, { email, password }) => {
   const user = await attemptSignIn(email, password)
 

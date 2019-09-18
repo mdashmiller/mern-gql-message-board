@@ -12,6 +12,7 @@ import {
   SESS_NAME, SESS_SECRET, SESS_LIFETIME
 } from './config'
 import schemaDirectives from './directives'
+import { confirm, forgotPassword } from './routes'
 
 (async () => {
   try {
@@ -44,11 +45,11 @@ import schemaDirectives from './directives'
       }
     }))
 
-    // app.use(bodyParser.urlencoded({ extended: false }))
+    app.use(bodyParser.json())
 
     // confirm email and forgot password routes
-    // app.use('/confirm', require('./routes/confirm'))
-    // app.use('/forgotpassword', require('./routes/forgotPassword'))
+    app.use('/confirm', confirm)
+    app.use('/forgotpassword', forgotPassword)
 
     const server = new ApolloServer({
       typeDefs,

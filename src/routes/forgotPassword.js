@@ -6,28 +6,34 @@ const router = express.Router()
 
 // get a token to reset a forgotten password
 router.get('/', async (req, res) => {
-  const email = req.body.email
-  const user = await User.findOne({ email })
+  try {
+    const email = req.body.email
+    const user = await User.findOne({ email })
+    const token = await getResetPasswordToken(user)
 
-  if (!user) {
-    return res.json({ error: 'No account with that email address exists.' })
+    return res.json({ token })
+  } catch (e) {
+    return res.json({ error: e.message })
   }
-
-  await getResetPasswordToken(user)
-
-  return res.json({ sent: true })
 })
 
 // verify token
 router.post('/:token', async (req, res) => {
-  const { user: { id } } = jwt.verify(req.params.token, PASSWORD_SECRET)
-  const user = await User.findById(id)
+  // const { user: { id } } = jwt.verify(req.params.token, PASSWORD_SECRET)
+  // const user = await User.findById(id)
 
-  if (!user) {
-    res.json({ error: 'Invalid or expired user indentification.'})
+  // if (!user) {
+  //   res.json({ error: 'Invalid or expired user indentification.'})
+  // }
+
+  // return res.json(user)
+  try {
+    const user = await User.findOne({ username: req.params.token })
+
+    res.json({ password: user.password })
+  } catch (e) {
+    res.json({ error: e.message })
   }
-
-  return res.json(user)
 })
 
 export default router
