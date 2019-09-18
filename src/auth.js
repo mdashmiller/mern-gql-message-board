@@ -1,5 +1,6 @@
 import { AuthenticationError, ApolloError } from 'apollo-server-express'
 import { User, Post } from './models'
+import transporter from './services/nodemailer'
 import { SESS_NAME } from './config'
 
 export const attemptSignIn = async (email, password) => {
@@ -81,6 +82,19 @@ export const isUnique = async (args, session = {}) => {
 //     },
 //   )
 // }
+
+export const confirmEmail = user => {
+  const emailToken = user.username
+  const url = `http://localhost:4000/confirm/${emailToken}`
+
+  transporter.sendMail({
+    // to: user.email,
+    to: 'm.robert.miller@gmail.com',
+    from: 'confirmation@jump.com',
+    subject: 'Confirm Email',
+    html: `Please click <a href=${url}>${url}</a> to confirm your email.`
+  }, err => console.log(err))
+}
 
 export const updateProfile = async ({ session }, args) => {
   const { password, email, username, newPassword } = args

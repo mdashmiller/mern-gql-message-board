@@ -4,14 +4,23 @@ import { User } from '../models'
 const router = express.Router()
 
 router.get('/:token', async (req, res) => {
+  // try {
+  //   const { user: { id } } = jwt.verify(req.params.token, EMAIL_SECRET)
+  //   await User.update({ confirmed: true }, { where: { id } })
+  // } catch (e) {
+  //   console.log(e)
+  // }
+
+  // return res.json({ confirmed: true })
   try {
-    const { user: { id } } = jwt.verify(req.params.token, EMAIL_SECRET)
-    await User.update({ confirmed: true }, { where: { id } })
+    const user = await User.findOne({ username: req.params.token })
+
+    await user.update({ confirmed: true })
   } catch (e) {
-    console.log(e)
+    res.json({ error: e.message })
   }
 
-  return res.json({ confirmed: true })
+  res.json({ confirmed: true })
 })
 
 export default router
