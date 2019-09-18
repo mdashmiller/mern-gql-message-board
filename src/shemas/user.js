@@ -33,7 +33,7 @@ export const remove = Joi.object().keys({
 export const update = Joi.object().keys({
   email: Joi.string().email().label('Email'),
   username: Joi.string().alphanum().min(3).max(30).label('Username'),
-  password: Joi.string().min(8).max(30).regex(
+  newPassword: Joi.string().min(8).max(30).regex(
     /^(?=\S*[a-z])(?=\S*[A-Z])(?=\S*\d)(?=\S*[^\w\s])\S{8,30}.*$/
   ).label('Password').options({
     language: {

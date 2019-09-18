@@ -11,7 +11,7 @@ export default gql`
     signUp(email: String!, username: String!, password: String!): User @guest
     signIn(email: String!, password: String!): User @guest
     signOut: Boolean @auth
-    update(email: String, username: String, password: String): User @auth
+    update(password: String! email: String, username: String, newPassword: String): User @auth
     remove(email: String!, password: String!): User @auth
   }
 

@@ -62,11 +62,15 @@ export const isUnique = async (args, session = {}) => {
 }
 
 export const updateProfile = async ({ session }, args) => {
-  const { email, username, password } = args
+  const { password, email, username, newPassword } = args
   const user = await User.findById(session.userId)
 
   if (!user) {
     throw new ApolloError('Server error. Please try again.')
+  }
+
+  if (!await user.matchesPassword(password)) {
+    throw new AuthenticationError('Incorrect password.')
   }
 
   await isUnique(args, session)
@@ -79,8 +83,8 @@ export const updateProfile = async ({ session }, args) => {
     user.username = username
   }
 
-  if (password) {
-    user.password = password
+  if (newPassword) {
+    user.password = newPassword
   }
 
   return user.save()

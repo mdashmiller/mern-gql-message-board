@@ -43,7 +43,9 @@ export default {
       return signOut(req, res)
     },
     update: async (root, args, { req }, info) => {
-      await Joi.validate(args, update, { abortEarly: false })
+      const { email, username, newPassword } = args
+
+      await Joi.validate({ email, username, newPassword }, update, { abortEarly: false })
 
       return updateProfile(req, args)
     },
