@@ -6,7 +6,7 @@ import { findPaginatedData } from '../pagination'
 import {
   isUnique,
   attemptSignIn,
-  confirmEmail,
+  sendEmailToken,
   signOut,
   updateProfile,
   removeProfile
@@ -33,9 +33,7 @@ export default {
 
       const user = await User.create(args)
 
-      confirmEmail(user)
-
-      // req.session.userId = user.id
+      sendEmailToken(user)
 
       return user
     },

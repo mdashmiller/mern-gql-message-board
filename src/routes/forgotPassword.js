@@ -1,6 +1,6 @@
 import express from 'express'
 import { User } from '../models'
-import { getResetPasswordToken } from '../auth'
+import { sendPasswordToken } from '../auth'
 
 const router = express.Router()
 
@@ -9,9 +9,12 @@ router.get('/', async (req, res) => {
   try {
     const email = req.body.email
     const user = await User.findOne({ email })
-    const token = await getResetPasswordToken(user)
+    const token = await sendPasswordToken(user)
+
+    // sendPasswordToken(user)
 
     return res.json({ token })
+    // return res.json({ sent: true })
   } catch (e) {
     return res.json({ error: e.message })
   }

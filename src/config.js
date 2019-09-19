@@ -15,7 +15,9 @@ export const {
   SESS_LIFETIME = 1000 * 60 * 60 * 2,
 
   GMAIL_USER,
-  GMAIL_PASS
+  EMAIL_CLIENT_ID,
+  EMAIL_CLIENT_SECRET,
+  EMAIL_REFRESH_TOKEN
 } = process.env
 
 export const IN_PROD = NODE_ENV === 'production'

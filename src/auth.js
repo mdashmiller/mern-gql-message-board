@@ -12,6 +12,10 @@ export const attemptSignIn = async (email, password) => {
     throw new AuthenticationError(message)
   }
 
+  if (!await user.confirmed) {
+    throw new AuthenticationError('This email address has not been confirmed.')
+  }
+
   if (!await user.matchesPassword(password)) {
     throw new AuthenticationError(message)
   }
@@ -62,7 +66,7 @@ export const isUnique = async (args, session = {}) => {
   }
 }
 
-// export const confirmEmail = user => {
+// export const sendEmailToken = user => {
 //   jwt.sign(
 //     {
 //       user: _.pick(user, 'id')
@@ -83,17 +87,24 @@ export const isUnique = async (args, session = {}) => {
 //   )
 // }
 
-export const confirmEmail = user => {
+export const sendEmailToken = user => {
   const emailToken = user.username
   const url = `http://localhost:4000/confirm/${emailToken}`
 
-  transporter.sendMail({
-    // to: user.email,
+  const mailOptions = {
+    from: 'JUMP <confirm@jump.com>',
     to: 'm.robert.miller@gmail.com',
-    from: 'confirmation@jump.com',
     subject: 'Confirm Email',
-    html: `Please click <a href=${url}>${url}</a> to confirm your email.`
-  }, err => console.log(err))
+    html: `<p>Please click <a href=${url}>${url}</a> to confirm your email.</p>`
+  }
+
+  transporter.sendMail(mailOptions, (err, res) => {
+    if (err) {
+      console.log(err.message)
+    } else {
+      console.log('Email sent.')
+    }
+  })
 }
 
 export const updateProfile = async ({ session }, args) => {
@@ -125,7 +136,7 @@ export const updateProfile = async ({ session }, args) => {
   return user.save()
 }
 
-// export const getResetPasswordToken = user => {
+// export const sendPasswordToken = user => {
 //   jwt.sign({ options }, (err, passwordToken) => {
 //     if (err) {
 //       console.log(err)
@@ -136,7 +147,7 @@ export const updateProfile = async ({ session }, args) => {
 //   })
 // }
 
-export const getResetPasswordToken = user => {
+export const sendPasswordToken = user => {
   // const token = user.password
 
   // if (!token) {

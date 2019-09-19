@@ -13,14 +13,16 @@ router.get('/:token', async (req, res) => {
 
   // return res.json({ confirmed: true })
   try {
-    const user = await User.findOne({ username: req.params.token })
-
-    await user.update({ confirmed: true })
+    await User.updateOne(
+      { username: req.params.token },
+      { confirmed: true }
+    )
   } catch (e) {
     res.json({ error: e.message })
   }
 
   res.json({ confirmed: true })
+  // res.redirect('login')
 })
 
 export default router
