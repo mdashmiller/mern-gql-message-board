@@ -1,28 +1,28 @@
 import express from 'express'
+import jwt from 'jsonwebtoken'
 import { User } from '../models'
+import { EMAIL_TOKEN_SECRET } from '../config'
 
 const router = express.Router()
 
-router.get('/:token', async (req, res) => {
-  // try {
-  //   const { user: { id } } = jwt.verify(req.params.token, EMAIL_SECRET)
-  //   await User.update({ confirmed: true }, { where: { id } })
-  // } catch (e) {
-  //   console.log(e)
-  // }
+const respondWithError = (res, err) => res.json({ error: err.message })
 
-  // return res.json({ confirmed: true })
-  try {
-    await User.updateOne(
-      { username: req.params.token },
-      { confirmed: true }
-    )
-  } catch (e) {
-    res.json({ error: e.message })
-  }
+router.get('/:token', (req, res) => {
+  jwt.verify(req.params.token, EMAIL_TOKEN_SECRET, (err, payload) => {
+    if (err) respondWithError(res, err)
 
-  res.json({ confirmed: true })
-  // res.redirect('login')
+    User.findById(payload.id, (err, user) => {
+      if (err) respondWithError(res, err)
+
+      user.confirmed = true
+
+      user.save(err => {
+        if (err) respondWithError(res, err)
+
+        res.json({ confirmed: true })
+      })
+    })
+  })
 })
 
 export default router

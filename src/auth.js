@@ -1,7 +1,8 @@
 import { AuthenticationError, ApolloError } from 'apollo-server-express'
 import { User, Post } from './models'
 import transporter from './services/nodemailer'
-import { SESS_NAME } from './config'
+import jwt from 'jsonwebtoken'
+import { SESS_NAME, EMAIL_TOKEN_SECRET } from './config'
 
 export const attemptSignIn = async (email, password) => {
   const message = 'Incorrect email or password. Please try again.'
@@ -66,46 +67,62 @@ export const isUnique = async (args, session = {}) => {
   }
 }
 
-// export const sendEmailToken = user => {
-//   jwt.sign(
-//     {
-//       user: _.pick(user, 'id')
-//     },
-//     EMAIL_SECRET,
-//     {
-//       expiresIn: '1d'
-//     },
-//     (err, emailToken) => {
-//       const url = `http://localhost:3000/confirmation/${emailToken}`
-
-//       transporter.sendMail({
-//         to: args.email,
-//         subject: 'Confirm Email',
-//         html: `Please click this email to confirm your email: <a href="${url}">${url}</a>`
-//       })
-//     },
-//   )
-// }
-
 export const sendEmailToken = user => {
-  const emailToken = user.username
-  const url = `http://localhost:4000/confirm/${emailToken}`
+  jwt.sign(
+    {
+      id: user.id
+    },
+    EMAIL_TOKEN_SECRET,
+    {
+      expiresIn: '1d'
+    },
+    (err, emailToken) => {
+      if (err) {
+        console.log(err.message)
+      } else {
+        const url = `http://localhost:4000/confirm/${emailToken}`
 
-  const mailOptions = {
-    from: 'JUMP <confirm@jump.com>',
-    to: 'm.robert.miller@gmail.com',
-    subject: 'Confirm Email',
-    html: `<p>Please click <a href=${url}>${url}</a> to confirm your email.</p>`
-  }
+        const mailOptions = {
+          from: 'JUMP <confirm@jump.com>',
+          to: 'm.robert.miller@gmail.com',
+          subject: 'Confirm Email',
+          html: `
+            <h3>Thanks for joining JUMP!</h3>
+            <p>Please click <a href=${url}>here</a> to confirm your email.</p>
+          `
+        }
 
-  transporter.sendMail(mailOptions, (err, res) => {
-    if (err) {
-      console.log(err.message)
-    } else {
-      console.log('Email sent.')
+        transporter.sendMail(mailOptions, (err, res) => {
+          if (err) {
+            console.log(err.message)
+          } else {
+            console.log('Email sent.')
+          }
+        })
+      }
     }
-  })
+  )
 }
+
+// export const sendEmailToken = user => {
+//   const emailToken = user.username
+//   const url = `http://localhost:4000/confirm/${emailToken}`
+
+//   const mailOptions = {
+//     from: 'JUMP <confirm@jump.com>',
+//     to: 'm.robert.miller@gmail.com',
+//     subject: 'Confirm Email',
+//     html: `<p>Please click <a href=${url}>${url}</a> to confirm your email.</p>`
+//   }
+
+//   transporter.sendMail(mailOptions, (err, res) => {
+//     if (err) {
+//       console.log(err.message)
+//     } else {
+//       console.log('Email sent.')
+//     }
+//   })
+// }
 
 export const updateProfile = async ({ session }, args) => {
   const { password, email, username, newPassword } = args

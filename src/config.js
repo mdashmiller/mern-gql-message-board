@@ -17,7 +17,9 @@ export const {
   GMAIL_USER,
   EMAIL_CLIENT_ID,
   EMAIL_CLIENT_SECRET,
-  EMAIL_REFRESH_TOKEN
+  EMAIL_REFRESH_TOKEN,
+
+  EMAIL_TOKEN_SECRET
 } = process.env
 
 export const IN_PROD = NODE_ENV === 'production'
