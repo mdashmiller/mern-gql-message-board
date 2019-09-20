@@ -1,6 +1,8 @@
 import { AuthenticationError, ApolloError } from 'apollo-server-express'
 import { User, Post } from './models'
-import { SESS_NAME } from './config'
+import transporter from './services/nodemailer'
+import jwt from 'jsonwebtoken'
+import { SESS_NAME, EMAIL_TOKEN_SECRET } from './config'
 
 export const attemptSignIn = async (email, password) => {
   const message = 'Incorrect email or password. Please try again.'
@@ -9,6 +11,10 @@ export const attemptSignIn = async (email, password) => {
 
   if (!user) {
     throw new AuthenticationError(message)
+  }
+
+  if (!await user.confirmed) {
+    throw new AuthenticationError('This email address has not been confirmed.')
   }
 
   if (!await user.matchesPassword(password)) {
@@ -61,6 +67,63 @@ export const isUnique = async (args, session = {}) => {
   }
 }
 
+export const sendEmailToken = user => {
+  jwt.sign(
+    {
+      id: user.id
+    },
+    EMAIL_TOKEN_SECRET,
+    {
+      expiresIn: '1d'
+    },
+    (err, emailToken) => {
+      if (err) {
+        console.log(err.message)
+      } else {
+        const url = `http://localhost:4000/confirm/${emailToken}`
+
+        const mailOptions = {
+          from: 'JUMP <confirm@jump.com>',
+          to: 'm.robert.miller@gmail.com',
+          subject: 'Confirm Email',
+          html: `
+            <h3>Thanks for joining JUMP!</h3>
+            <p>Please click <a href=${url}>here</a> to confirm your email.</p>
+          `
+        }
+
+        transporter.sendMail(mailOptions, (err, res) => {
+          if (err) {
+            console.log(err.message)
+          } else {
+            console.log('Email sent.')
+          }
+        })
+      }
+    }
+  )
+}
+
+// export const sendEmailToken = user => {
+//   const emailToken = user.username
+//   const url = `http://localhost:4000/confirm/${emailToken}`
+
+//   const mailOptions = {
+//     from: 'JUMP <confirm@jump.com>',
+//     to: 'm.robert.miller@gmail.com',
+//     subject: 'Confirm Email',
+//     html: `<p>Please click <a href=${url}>${url}</a> to confirm your email.</p>`
+//   }
+
+//   transporter.sendMail(mailOptions, (err, res) => {
+//     if (err) {
+//       console.log(err.message)
+//     } else {
+//       console.log('Email sent.')
+//     }
+//   })
+// }
+
 export const updateProfile = async ({ session }, args) => {
   const { password, email, username, newPassword } = args
   const user = await User.findById(session.userId)
@@ -88,6 +151,28 @@ export const updateProfile = async ({ session }, args) => {
   }
 
   return user.save()
+}
+
+// export const sendPasswordToken = user => {
+//   jwt.sign({ options }, (err, passwordToken) => {
+//     if (err) {
+//       console.log(err)
+//     }
+//     transporter.sendMail() => {
+//       if (err) console.log(err)
+//     }
+//   })
+// }
+
+export const sendPasswordToken = user => {
+  // const token = user.password
+
+  // if (!token) {
+  //   throw new ApolloError('Server error. Please try again.')
+  // }
+
+  // return token
+  return user.username
 }
 
 export const removeProfile = async ({ session }, { email, password }) => {

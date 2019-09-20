@@ -3,7 +3,14 @@ import Joi from 'joi'
 import { signUp, signIn, update, remove, objectId } from '../shemas'
 import { usersProjection, populatePosts } from '../projections'
 import { findPaginatedData } from '../pagination'
-import { isUnique, attemptSignIn, signOut, updateProfile, removeProfile } from '../auth'
+import {
+  isUnique,
+  attemptSignIn,
+  sendEmailToken,
+  signOut,
+  updateProfile,
+  removeProfile
+} from '../auth'
 
 export default {
   Query: {
@@ -26,7 +33,7 @@ export default {
 
       const user = await User.create(args)
 
-      req.session.userId = user.id
+      sendEmailToken(user)
 
       return user
     },

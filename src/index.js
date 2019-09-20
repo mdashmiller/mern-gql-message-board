@@ -3,6 +3,7 @@ import express from 'express'
 import mongoose from 'mongoose'
 import session from 'express-session'
 import connectMongo from 'connect-mongo'
+import bodyParser from 'body-parser'
 import typeDefs from './typeDefs'
 import resolvers from './resolvers'
 import {
@@ -11,6 +12,7 @@ import {
   SESS_NAME, SESS_SECRET, SESS_LIFETIME
 } from './config'
 import schemaDirectives from './directives'
+import { confirm, forgotPassword } from './routes'
 
 (async () => {
   try {
@@ -42,6 +44,12 @@ import schemaDirectives from './directives'
         secure: IN_PROD
       }
     }))
+
+    app.use(bodyParser.json())
+
+    // confirm email and forgot password routes
+    app.use('/confirm', confirm)
+    app.use('/forgotpassword', forgotPassword)
 
     const server = new ApolloServer({
       typeDefs,
