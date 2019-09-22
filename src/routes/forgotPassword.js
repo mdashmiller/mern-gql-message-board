@@ -15,16 +15,16 @@ router.get('/', async (req, res) => {
   const user = await User.findOne({ email: req.body.email })
 
   if (!user) {
-    return res.end('No user exists for that email.')
+    return res.end('User not found.')
   }
 
-  const result = sendToken(user, 'forgot')
-
-  return res.end(result)
+  sendToken(user, 'forgot')
+    .then(result => res.end(result))
+    .catch(e => res.end(e.message))
 })
 
 // verify token
-router.get('/:token', async (req, res) => {
+router.get('/:token', (req, res) => {
   jwt.verify(req.params.token, EMAIL_TOKEN_SECRET, err => {
     if (err) {
       return res.end(err.message)

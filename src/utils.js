@@ -1,6 +1,6 @@
 import { TEST_INBOX } from './config'
 
-export const createEmail = (user, type, token) => {
+export const createEmail = (type, token) => {
   const url = type === 'confirm' ? (
     `http://localhost:4000/confirm/${token}`
   ) : (

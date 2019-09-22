@@ -68,7 +68,7 @@ export const isUnique = async (args, session = {}) => {
   }
 }
 
-export const sendToken = (user, type) => {
+export const sendToken = async (user, type) => {
   const successMessage = type === 'confirm' ? (
     'A confirmation email has been sent to your address.'
   ) : (
@@ -77,9 +77,9 @@ export const sendToken = (user, type) => {
 
   try {
     const token = jwt.sign({ id: user.id }, EMAIL_TOKEN_SECRET, { expiresIn: '1d' })
-    const mailOptions = createEmail(user, type, token)
+    const mailOptions = createEmail(type, token)
 
-    transporter.sendMail(mailOptions)
+    await transporter.sendMail(mailOptions)
   } catch (e) {
     return e.message
   }
