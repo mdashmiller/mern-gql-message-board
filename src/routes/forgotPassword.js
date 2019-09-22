@@ -1,42 +1,37 @@
 import express from 'express'
 import { User } from '../models'
-import { sendPasswordToken } from '../auth'
+import jwt from 'jsonwebtoken'
+import { sendToken } from '../auth'
+import { EMAIL_TOKEN_SECRET } from '../config'
 
 const router = express.Router()
 
 // get a token to reset a forgotten password
 router.get('/', async (req, res) => {
-  try {
-    const email = req.body.email
-    const user = await User.findOne({ email })
-    const token = await sendPasswordToken(user)
-
-    // sendPasswordToken(user)
-
-    return res.json({ token })
-    // return res.json({ sent: true })
-  } catch (e) {
-    return res.json({ error: e.message })
+  if (!req.body.email) {
+    return res.end('Please enter your email.')
   }
+
+  const user = await User.findOne({ email: req.body.email })
+
+  if (!user) {
+    return res.end('No user exists for that email.')
+  }
+
+  const result = sendToken(user, 'forgot')
+
+  return res.end(result)
 })
 
 // verify token
-router.post('/:token', async (req, res) => {
-  // const { user: { id } } = jwt.verify(req.params.token, PASSWORD_SECRET)
-  // const user = await User.findById(id)
+router.get('/:token', async (req, res) => {
+  jwt.verify(req.params.token, EMAIL_TOKEN_SECRET, err => {
+    if (err) {
+      return res.end(err.message)
+    }
+  })
 
-  // if (!user) {
-  //   res.json({ error: 'Invalid or expired user indentification.'})
-  // }
-
-  // return res.json(user)
-  try {
-    const user = await User.findOne({ username: req.params.token })
-
-    res.json({ password: user.password })
-  } catch (e) {
-    res.json({ error: e.message })
-  }
+  return res.end('Please enter a new password.')
 })
 
 export default router

@@ -6,7 +6,7 @@ import { findPaginatedData } from '../pagination'
 import {
   isUnique,
   attemptSignIn,
-  sendEmailToken,
+  sendToken,
   signOut,
   updateProfile,
   removeProfile
@@ -33,7 +33,7 @@ export default {
 
       const user = await User.create(args)
 
-      sendEmailToken(user)
+      sendToken(user, 'confirm')
 
       return user
     },

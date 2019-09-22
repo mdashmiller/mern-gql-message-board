@@ -19,7 +19,9 @@ export const {
   EMAIL_CLIENT_SECRET,
   EMAIL_REFRESH_TOKEN,
 
-  EMAIL_TOKEN_SECRET
+  EMAIL_TOKEN_SECRET,
+
+  TEST_INBOX
 } = process.env
 
 export const IN_PROD = NODE_ENV === 'production'
