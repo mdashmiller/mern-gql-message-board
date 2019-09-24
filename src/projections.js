@@ -19,7 +19,6 @@ export const populatePosts = args => {
 }
 
 export const postsProjection = {
-  _id: 0,
   body: 0,
   updatedAt: 0
 }

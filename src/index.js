@@ -9,6 +9,7 @@ import resolvers from './resolvers'
 import {
   APP_PORT, IN_PROD,
   DB_USERNAME, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME,
+  CLIENT_URI,
   SESS_NAME, SESS_SECRET, SESS_LIFETIME
 } from './config'
 import schemaDirectives from './directives'
@@ -30,8 +31,7 @@ import cors from 'cors'
     app.disable('x-powered-by')
 
     const corsOptions = {
-      origin: 'http://localhost:3000',
-      // origin: process.env.FRONTEND_URL,
+      origin: CLIENT_URI,
       credentials: true
     }
 
