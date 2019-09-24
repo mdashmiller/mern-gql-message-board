@@ -13,6 +13,7 @@ import {
 } from './config'
 import schemaDirectives from './directives'
 import { confirm, forgotPassword } from './routes'
+import cors from 'cors'
 
 (async () => {
   try {
@@ -27,6 +28,14 @@ import { confirm, forgotPassword } from './routes'
     const app = express()
 
     app.disable('x-powered-by')
+
+    const corsOptions = {
+      origin: 'http://localhost:3000',
+      // origin: process.env.FRONTEND_URL,
+      credentials: true
+    }
+
+    app.use(cors(corsOptions))
 
     const MongoStore = connectMongo(session)
     const store = new MongoStore({ mongooseConnection: mongoose.connection })
