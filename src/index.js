@@ -9,10 +9,12 @@ import resolvers from './resolvers'
 import {
   APP_PORT, IN_PROD,
   DB_USERNAME, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME,
+  CLIENT_URI,
   SESS_NAME, SESS_SECRET, SESS_LIFETIME
 } from './config'
 import schemaDirectives from './directives'
 import { confirm, forgotPassword } from './routes'
+import cors from 'cors'
 
 (async () => {
   try {
@@ -27,6 +29,13 @@ import { confirm, forgotPassword } from './routes'
     const app = express()
 
     app.disable('x-powered-by')
+
+    const corsOptions = {
+      origin: CLIENT_URI,
+      credentials: true
+    }
+
+    app.use(cors(corsOptions))
 
     const MongoStore = connectMongo(session)
     const store = new MongoStore({ mongooseConnection: mongoose.connection })

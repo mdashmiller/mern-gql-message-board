@@ -10,6 +10,8 @@ export const {
   DB_PORT,
   DB_NAME,
 
+  CLIENT_URI,
+
   SESS_NAME,
   SESS_SECRET,
   SESS_LIFETIME = 1000 * 60 * 60 * 2,
