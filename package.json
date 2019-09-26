@@ -31,7 +31,6 @@
     "redis": "^2.8.0"
   },
   "devDependencies": {
-    "concurrently": "^4.1.2",
-    "standard": "^14.0.2"
+    "concurrently": "^4.1.2"
   }
 }

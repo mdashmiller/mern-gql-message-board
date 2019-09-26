@@ -1,12 +1,12 @@
 import React from 'react'
 
 import SignIn from './components/SignIn'
-import PostList from './components/PostList'
+// import PostList from './components/PostList'
 
 function App () {
   return (
     <div>
-      <PostList />
+      {/* <PostList /> */}
       <SignIn />
     </div>
   )
