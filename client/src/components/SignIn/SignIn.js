@@ -1,48 +1,87 @@
-import React, { useState } from 'react'
+import React, { useReducer } from 'react'
 
 import { useMutation } from '@apollo/react-hooks'
 
 import { SIGN_IN, SIGN_OUT } from '../../queries'
 
-function SignIn () {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState('')
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
+const loginReducer = (state, action) => {
+  switch (action.type) {
+    case 'field': {
+      return {
+        ...state,
+        [action.fieldName]: action.payload
+      }
+    }
+    case 'login': {
+      return {
+        ...state,
+        error: '',
+        isLoading: true
+      }
+    }
+    case 'success': {
+      return {
+        ...state,
+        isLoading: false,
+        isLoggedIn: true,
+        email: '',
+        password: ''
+      }
+    }
+    case 'error': {
+      return {
+        ...state,
+        error: action.payload,
+        isLoading: false,
+        isLoggedIn: false
+      }
+    }
+    case 'logout': {
+      return {
+        ...state,
+        isLoggedIn: false
+      }
+    }
+    default:
+      return state
+  }
+}
 
+const initialState = {
+  email: '',
+  password: '',
+  isLoading: false,
+  error: '',
+  isLoggedIn: false
+}
+
+function SignIn () {
+  const [state, dispatch] = useReducer(loginReducer, initialState)
+  const { email, password, isLoading, error, isLoggedIn } = state
   const [signIn, { data }] = useMutation(SIGN_IN)
   const [signOut] = useMutation(SIGN_OUT)
 
   const handleLogIn = async e => {
     e.preventDefault()
 
-    setError('')
-    setIsLoading(true)
+    dispatch({ type: 'login' })
 
     try {
       await signIn({ variables: { email, password } })
 
-      setIsLoggedIn(true)
-    } catch (e) {
-      setError('Incorrect email or password')
-      setIsLoading(false)
-      setEmail('')
-      setPassword('')
+      dispatch({ type: 'success' })
+    } catch (err) {
+      dispatch({ type: 'error', payload: 'Incorrect email or password' })
     }
   }
 
-  const handleLogOut = async e => {
-    e.preventDefault()
-
+  const handleLogOut = async () => {
     try {
       await signOut()
 
-      setIsLoggedIn(false)
-      setEmail('')
-      setPassword('')
-    } catch (e) {
-      setError('There was a logout error. Please try again.')
+      dispatch({ type: 'logout' })
+    } catch (err) {
+      dispatch({ type: 'error', payload: 'There was a logout error. Please try again.'})
     }
   }
 
@@ -61,13 +100,25 @@ function SignIn () {
             type="email"
             placeholder="Email"
             value={email}
-            onChange={e => setEmail(e.target.value)}
+            onChange={e =>
+              dispatch({
+                type: 'field',
+                fieldName: 'email',
+                payload: e.currentTarget.value
+              })
+            }
           />
           <input
             type="password"
-            placeholder="Passowrd"
+            placeholder="Password"
             value={password}
-            onChange={e => setPassword(e.target.value)}
+            onChange={e =>
+              dispatch({
+                type: 'field',
+                fieldName: 'password',
+                payload: e.currentTarget.value
+              })
+            }
           />
           <button disabled={isLoading}>
             {isLoading ? 'Logging in...' : 'Log In'}
