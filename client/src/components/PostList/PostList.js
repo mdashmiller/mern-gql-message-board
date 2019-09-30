@@ -1,16 +1,8 @@
 import React from 'react'
 
-import { gql } from 'apollo-boost'
 import { useQuery } from '@apollo/react-hooks'
 
-const GET_POSTS = gql`
-  query{
-    posts{
-      id
-      title
-    }
-  }
-`
+import { GET_POSTS } from '../../queries'
 
 const PostList = () => {
   const { loading, error, data } = useQuery(GET_POSTS)
@@ -20,7 +12,17 @@ const PostList = () => {
 
   return (
     <div>
-      {data.posts.map(post => <div key={post.id}>{post.title}</div>)}
+      {data.posts.map(
+        post => {
+          return (
+            <div key={post.id}>
+              <h2>{post.title}</h2>
+              <h3>{post.author.username}</h3>
+              <p>{post.createdAt}</p>
+            </div>
+          )
+        })
+      }
     </div>
   )
 }
