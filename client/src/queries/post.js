@@ -12,3 +12,16 @@ export const GET_POSTS = gql`
     }
   }
 `
+
+export const GET_POST = gql`
+  query GetPost($id: ID!) {
+    post(id: $id) {
+      title
+      author {
+        username
+      }
+      createdAt
+      body
+    }
+  }
+`
