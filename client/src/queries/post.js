@@ -25,3 +25,11 @@ export const GET_POST = gql`
     }
   }
 `
+
+export const CREATE_POST = gql`
+  mutation CreatePost($authorId: ID!, $title: String, $body: String!) {
+    createPost(authorId: $authorId, title: $title, body: $body) {
+      id
+    }
+  }
+`

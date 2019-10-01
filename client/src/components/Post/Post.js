@@ -4,9 +4,9 @@ import { useQuery } from '@apollo/react-hooks'
 
 import { GET_POST } from '../../queries'
 
-const Post = () => {
+const Post = ({ match }) => {
   const { loading, error, data } = useQuery(GET_POST, {
-    variables: { id: "5d780f1ca4cc880a8c74adb5" }
+    variables: { id: match.params.postId }
   })
 
   if (loading) return <p>Loading...</p>
