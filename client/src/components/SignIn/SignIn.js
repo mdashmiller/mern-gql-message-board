@@ -55,7 +55,7 @@ const initialState = {
   isLoggedIn: false
 }
 
-function SignIn () {
+function SignIn ({ history }) {
   const [state, dispatch] = useReducer(loginReducer, initialState)
   const { email, password, isLoading, error, isLoggedIn } = state
   const [signIn, { data }] = useMutation(SIGN_IN)
@@ -70,6 +70,8 @@ function SignIn () {
       await signIn({ variables: { email, password } })
 
       dispatch({ type: 'success' })
+
+      history.push('/posts')
     } catch (err) {
       dispatch({ type: 'error', payload: 'Incorrect email or password' })
     }
