@@ -46,16 +46,25 @@ const CreatePost = ({ history }) => {
   async function handleSumbit (e) {
     e.preventDefault()
 
-    dispatch({ type: 'post' })
-
-    try {
-      await createPost({ variables:
-        {
+    // allow user to create a post without a title -- server
+    // will generate it from the body content
+    const variables = title === '' ? (
+      {
+        authorId: "5d86893f325b880bac6070ad",
+        body: message
+      }
+    ) : (
+      {
           authorId: "5d86893f325b880bac6070ad",
           title,
           body: message
-        }
-      })
+      }
+    )
+
+    dispatch({ type: 'post' })
+
+    try {
+      await createPost({ variables })
 
       history.push('/posts')
     } catch (err) {
