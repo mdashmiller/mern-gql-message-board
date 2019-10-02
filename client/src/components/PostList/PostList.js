@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 
 import { useQuery } from '@apollo/react-hooks'
 
@@ -7,13 +7,26 @@ import { GET_POSTS } from '../../queries'
 import { Link } from 'react-router-dom'
 
 const PostList = () => {
-  const { loading, error, data } = useQuery(GET_POSTS)
+  const [isLoadingMore, setIsLoadingMore] = useState(false)
+  const [page, setPage] = useState(1)
+  const variables = isLoadingMore ? ({ page }) : ({})
+  const { loading, error, data } = useQuery(GET_POSTS, { variables })
+
+  function loadMore () {
+    setIsLoadingMore(true)
+
+    setPage(page + 1)
+  }
+
+  useEffect(() => {
+    setIsLoadingMore(false)
+  }, [data])
 
   if (loading) return <p>Loading...</p>
   if (error) return <p>Error!</p>
 
   return (
-    <div>
+    <section>
       {data.posts.map(
         post => {
           return (
@@ -25,7 +38,10 @@ const PostList = () => {
           )
         })
       }
-    </div>
+      <button onClick={loadMore} disabled={loading}>
+        {loading ? 'Loading...' : 'Load More'}
+      </button>
+    </section>
   )
 }
 

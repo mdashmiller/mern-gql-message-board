@@ -1,8 +1,8 @@
 import { gql } from 'apollo-boost'
 
 export const GET_POSTS = gql`
-  query {
-    posts {
+  query GetPosts($limit: Int, $page: Int) {
+    posts(limit: $limit, page: $page) {
       id
       title
       createdAt
