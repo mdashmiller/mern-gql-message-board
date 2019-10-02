@@ -1,8 +1,10 @@
 import React, { useReducer } from 'react'
 
 import { useMutation } from '@apollo/react-hooks'
+import { SIGN_IN } from '../../queries'
 
-import { SIGN_IN, SIGN_OUT } from '../../queries'
+import { connect } from 'react-redux'
+import { authorize } from '../../actions'
 
 const loginReducer = (state, action) => {
   switch (action.type) {
@@ -23,7 +25,6 @@ const loginReducer = (state, action) => {
       return {
         ...state,
         isLoading: false,
-        isLoggedIn: true,
         email: '',
         password: ''
       }
@@ -32,14 +33,7 @@ const loginReducer = (state, action) => {
       return {
         ...state,
         error: action.payload,
-        isLoading: false,
-        isLoggedIn: false
-      }
-    }
-    case 'logout': {
-      return {
-        ...state,
-        isLoggedIn: false
+        isLoading: false
       }
     }
     default:
@@ -52,14 +46,18 @@ const initialState = {
   password: '',
   isLoading: false,
   error: '',
-  isLoggedIn: false
 }
 
-function SignIn ({ history }) {
+const mapDispatchToProps = (dispatch) => {
+  return {
+    authorize: authInfo => dispatch(authorize(authInfo))
+  }
+}
+
+function SignIn({ history, authorize }) {
   const [state, dispatch] = useReducer(loginReducer, initialState)
-  const { email, password, isLoading, error, isLoggedIn } = state
-  const [signIn, { data }] = useMutation(SIGN_IN)
-  const [signOut] = useMutation(SIGN_OUT)
+  const { email, password, isLoading, error } = state
+  const [signIn] = useMutation(SIGN_IN)
 
   const handleLogIn = async e => {
     e.preventDefault()
@@ -67,9 +65,11 @@ function SignIn ({ history }) {
     dispatch({ type: 'login' })
 
     try {
-      await signIn({ variables: { email, password } })
+      const user = await signIn({ variables: { email, password } })
 
       dispatch({ type: 'success' })
+
+      authorize(user)
 
       history.push('/posts')
     } catch (err) {
@@ -77,58 +77,41 @@ function SignIn ({ history }) {
     }
   }
 
-  const handleLogOut = async () => {
-    try {
-      await signOut()
-
-      dispatch({ type: 'logout' })
-    } catch (err) {
-      dispatch({ type: 'error', payload: 'There was a logout error. Please try again.'})
-    }
-  }
-
   return (
-    <div>
-      {isLoggedIn ? (
-        <>
-          <h1>Welcome {data.signIn.username}!</h1>
-          <button onClick={handleLogOut}>Logout</button>
-        </>
-      ) : (
-        <form onSubmit={handleLogIn}>
-          {error && <p>{error}</p>}
-          <p>Please Login!</p>
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={e =>
-              dispatch({
-                type: 'field',
-                fieldName: 'email',
-                payload: e.currentTarget.value
-              })
-            }
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={e =>
-              dispatch({
-                type: 'field',
-                fieldName: 'password',
-                payload: e.currentTarget.value
-              })
-            }
-          />
-          <button disabled={isLoading}>
-            {isLoading ? 'Logging in...' : 'Log In'}
-          </button>
-        </form>
-      )}
-    </div>
+    <section>
+      <form onSubmit={handleLogIn}>
+        {error && <p>{error}</p>}
+        <p>Please Login!</p>
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={e =>
+            dispatch({
+              type: 'field',
+              fieldName: 'email',
+              payload: e.currentTarget.value
+            })
+          }
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={e =>
+            dispatch({
+              type: 'field',
+              fieldName: 'password',
+              payload: e.currentTarget.value
+            })
+          }
+        />
+        <button disabled={isLoading}>
+          {isLoading ? 'Logging in...' : 'Log In'}
+        </button>
+      </form>
+    </section>
   )
 }
 
-export default SignIn
+export default connect(null, mapDispatchToProps)(SignIn)

@@ -6,12 +6,29 @@ import { Link, withRouter } from 'react-router-dom'
 
 import { SIGN_OUT } from '../../queries'
 
-const Nav = ({ history }) => {
+import { connect } from 'react-redux'
+import { deauthorize } from '../../actions'
+
+const mapStateToProps = state => {
+  return {
+    user: state.authReducer.user
+  }
+}
+
+const mapDispatchToProps = dispatch => {
+  return {
+    deauthorize: () => dispatch(deauthorize())
+  }
+}
+
+const Nav = ({ history, user, deauthorize }) => {
   const [signOut] = useMutation(SIGN_OUT)
 
   async function handleClick () {
     try {
       await signOut()
+
+      deauthorize()
 
       history.push('/')
     } catch (err) {
@@ -20,21 +37,26 @@ const Nav = ({ history }) => {
   }
 
   return (
-    <ul>
-      <li>
-        <Link to="/">Log In</Link>
-      </li>
-      <li>
-        <Link to="/posts">Dashboard</Link>
-      </li>
-      <li>
-        <Link to="/create-post">Create Post</Link>
-      </li>
-      <li>
-        <button onClick={handleClick}>Log Out</button>
-      </li>
-    </ul>
+    <section>
+      <h2>
+        {user ? `${user.username}` : 'GUEST'}
+      </h2>
+      <ul>
+        <li>
+          <Link to="/">Log In</Link>
+        </li>
+        <li>
+          <Link to="/posts">Dashboard</Link>
+        </li>
+        <li>
+          <Link to="/create-post">Create Post</Link>
+        </li>
+        <li>
+          <button onClick={handleClick}>Log Out</button>
+        </li>
+      </ul>
+    </section>
   )
 }
 
-export default withRouter(Nav)
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Nav))

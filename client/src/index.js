@@ -10,6 +10,9 @@ import { InMemoryCache } from 'apollo-cache-inmemory'
 
 import { BrowserRouter } from 'react-router-dom'
 
+import { Provider } from 'react-redux'
+import store from './store'
+
 const httpLink = createHttpLink({
   uri: 'http://localhost:4000/graphql',
   credentials: 'include'
@@ -22,11 +25,13 @@ const client = new ApolloClient({
 })
 
 ReactDOM.render(
-  <BrowserRouter>
-    <ApolloProvider client={client}>
-      <App />
-    </ApolloProvider>
-  </BrowserRouter>,
+  <ApolloProvider client={client}>
+    <Provider store={store}>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </Provider>
+  </ApolloProvider>,
   document.getElementById('root')
 )
 
