@@ -39,7 +39,7 @@ const Nav = ({ history, user, deauthorize }) => {
   return (
     <section>
       <h2>
-        {user ? `${user.username}` : 'GUEST'}
+        {user ? `${user.data.signIn.username}` : 'GUEST'}
       </h2>
       <ul>
         <li>
