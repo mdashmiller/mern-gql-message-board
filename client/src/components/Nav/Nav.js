@@ -1,46 +1,13 @@
 import React from 'react'
 
-import { useMutation } from '@apollo/react-hooks'
-
 import { Link, withRouter } from 'react-router-dom'
 
-import { SIGN_OUT } from '../../queries'
-
-import { connect } from 'react-redux'
-import { deauthorize } from '../../actions'
-
-const mapStateToProps = state => {
-  return {
-    user: state.authReducer.user
-  }
-}
-
-const mapDispatchToProps = dispatch => {
-  return {
-    deauthorize: () => dispatch(deauthorize())
-  }
-}
-
-const Nav = ({ history, user, deauthorize }) => {
-  const [signOut] = useMutation(SIGN_OUT)
-
-  async function handleClick () {
-    try {
-      await signOut()
-
-      deauthorize()
-
-      history.push('/')
-    } catch (err) {
-      console.log(err)
-    }
-  }
-
+const Nav = () => {
   return (
     <section>
-      <h2>
+      {/* <h2>
         {user ? `${user.data.signIn.username}` : 'GUEST'}
-      </h2>
+      </h2> */}
       <ul>
         <li>
           <Link to="/">Log In</Link>
@@ -51,12 +18,66 @@ const Nav = ({ history, user, deauthorize }) => {
         <li>
           <Link to="/create-post">Create Post</Link>
         </li>
-        <li>
+        {/* <li>
           <button onClick={handleClick}>Log Out</button>
-        </li>
+        </li> */}
       </ul>
     </section>
   )
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Nav))
+export default Nav
+
+// import { connect } from 'react-redux'
+
+// const mapStateToProps = state => {
+//   return {
+//     user: state.authReducer.user
+//   }
+// }
+
+// const mapDispatchToProps = dispatch => {
+//   return {
+//     deauthorize: () => dispatch(deauthorize())
+//   }
+// }
+
+// const Nav = ({ history, user, deauthorize }) => {
+//   const [signOut] = useMutation(SIGN_OUT)
+
+//   async function handleClick () {
+//     try {
+//       await signOut()
+
+//       deauthorize()
+
+//       history.push('/')
+//     } catch (err) {
+//       console.log(err)
+//     }
+//   }
+
+//   return (
+//     <section>
+//       <h2>
+//         {user ? `${user.data.signIn.username}` : 'GUEST'}
+//       </h2>
+//       <ul>
+//         <li>
+//           <Link to="/">Log In</Link>
+//         </li>
+//         <li>
+//           <Link to="/posts">Dashboard</Link>
+//         </li>
+//         <li>
+//           <Link to="/create-post">Create Post</Link>
+//         </li>
+//         <li>
+//           <button onClick={handleClick}>Log Out</button>
+//         </li>
+//       </ul>
+//     </section>
+//   )
+// }
+
+// export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Nav))

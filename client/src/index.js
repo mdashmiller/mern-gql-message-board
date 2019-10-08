@@ -3,35 +3,38 @@ import ReactDOM from 'react-dom'
 import App from './App'
 import * as serviceWorker from './serviceWorker'
 
-import { ApolloClient } from 'apollo-boost'
-import { ApolloProvider } from '@apollo/react-hooks'
-import { createHttpLink } from 'apollo-link-http'
-import { InMemoryCache } from 'apollo-cache-inmemory'
+// import { ApolloClient } from 'apollo-boost'
+// import { ApolloProvider } from '@apollo/react-hooks'
+// import { createHttpLink } from 'apollo-link-http'
+// import { InMemoryCache } from 'apollo-cache-inmemory'
 
 import { BrowserRouter } from 'react-router-dom'
 
 import { Provider } from 'react-redux'
-import store from './store'
+import configureStore from './store'
 
-const httpLink = createHttpLink({
-  uri: 'http://localhost:4000/graphql',
-  credentials: 'include'
-})
+// const httpLink = createHttpLink({
+//   uri: 'http://localhost:4000/graphql',
+//   credentials: 'include'
+// })
 
-const client = new ApolloClient({
-  link: httpLink,
-  cache: new InMemoryCache(),
-  credentials: 'include'
-})
+// const client = new ApolloClient({
+//   link: httpLink,
+//   cache: new InMemoryCache(),
+//   credentials: 'include'
+// })
+
+const preloadedState = {}
+const store = configureStore(preloadedState)
 
 ReactDOM.render(
-  <ApolloProvider client={client}>
+  // <ApolloProvider client={client}>
     <Provider store={store}>
       <BrowserRouter>
         <App />
       </BrowserRouter>
-    </Provider>
-  </ApolloProvider>,
+    </Provider>,
+  // </ApolloProvider>,
   document.getElementById('root')
 )
 
